@@ -1,13 +1,13 @@
 import cv2
 import const
 
-def face_check(image_path, minsize=(25, 25)):
+def face_check(image_path, minsize=(64, 64)):
 
     image = cv2.imread(image_path)
 
     return face_check_from_ndarr(image, minsize)
 
-def face_check_from_ndarr(image, minsize=(25, 25)):
+def face_check_from_ndarr(image, minsize=(64, 64)):
 
     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -18,7 +18,7 @@ def face_check_from_ndarr(image, minsize=(25, 25)):
     return rect_to_subarray(rect, image)
 
 
-def get_rect_from_ndarr(image, minsize=(25, 25)):
+def get_rect_from_ndarr(image, minsize=(64, 64)):
 
     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
