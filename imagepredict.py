@@ -1,6 +1,9 @@
+import glob
+
 import cv2
 
 import matplotlib.pyplot as plt
+
 
 import predict
 import facetrimming
@@ -31,6 +34,3 @@ def predict_show(path):
     plt.pause(.01)
 
     input()
-
-predict_show('./sumizome.jpg')
-predict_show('./syuto.jpg')
