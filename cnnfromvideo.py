@@ -3,6 +3,7 @@ import shutil
 
 import const
 import videoread
+import getcontours
 import preprocessing
 import cnn
 
@@ -20,7 +21,8 @@ def main():
         os.mkdir(path)
 
         for movie in movies:
-            videoread.videoread(name, movie)
+            # videoread.videoread(name, movie)
+            getcontours.make_faces_picture(name, movie)
 
         path = './images/human_data/preprocessed_faces/' + name
         if os.path.exists(path):

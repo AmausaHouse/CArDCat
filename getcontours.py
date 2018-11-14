@@ -1,3 +1,5 @@
+import hashlib
+import datetime
 
 import numpy as np
 
@@ -48,17 +50,24 @@ def face_shape_detector_dlib(img):
     else :
         return img, None, None
 
-def main():
+def make_faces_picture(human_name, movie_path):
 
-    cap = cv2.VideoCapture(const.movie_path)
+    save_folder = './images/human_data/faces/' + human_name + '/'
+
+    cap = cv2.VideoCapture(movie_path)
     ret = True
 
-    while ret:
+    while True:
         ret, frame = cap.read()
+
+        if not ret:
+            break
+
         frame = frame.transpose(1, 0, 2)
         frame, roi, conv = face_shape_detector_dlib(frame)
 
-        cv2.imshow('img', frame)
+        if const.show_contours:
+            cv2.imshow('img', frame)
 
         if roi is not None :
 
@@ -67,14 +76,14 @@ def main():
 
             roi = cv2.bitwise_and(roi, roi, mask=white)
 
-            plt.imshow(cv2.cvtColor(roi, cv2.COLOR_BGR2RGB))
+            if const.show_contours:
+                plt.imshow(cv2.cvtColor(roi, cv2.COLOR_BGR2RGB))
 
+            name = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
+            cv2.imwrite(save_folder + name + '.png', roi)
 
         cv2.waitKey(1)
         plt.pause(.01)
 
     cap.release()
     cv2.destroyAllWindows()
-
-if __name__ == '__main__':
-    main()
