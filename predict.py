@@ -13,6 +13,7 @@ from keras.utils import plot_model
 
 import const
 import getdata
+import facetrimming
 
 vfunc = np.vectorize(lambda x: x / 255.0)
 
@@ -35,9 +36,3 @@ class Predict:
         data = np.array([im])
 
         return self.names[np.argmax(self.model.predict(data)[0])]
-
-
-    def predict_from_path(self, path):
-        im = cv2.imread(path).astype('float32')
-
-        return self.predict_from_image(im)
