@@ -1,12 +1,13 @@
 import glob
+import numpy as np
 
 import cv2
 
-import matplotlib.pyplot as plt
-
+import matplotlib.pyplot as plt 
 
 import predict
 import facetrimming
+import getcontours
 
 color0 = (60, 60, 60)
 color1 = (180, 180, 180)
@@ -39,6 +40,7 @@ class ImagePredictor:
 
     def __init__(self):
         self.pr = predict.Predict()
+        self.gc = getcontours.GetContours()
 
     def predict(self,path):
 
@@ -49,14 +51,25 @@ class ImagePredictor:
 
         for r in rect:
 
-            resized = cv2.resize(im[r[1]:r[1]+r[3],r[0]:r[0]+r[2]], (64, 64))
+            copy = im.copy()[r[1]:r[1]+r[3],r[0]:r[0]+r[2]]
 
-            pred = self.pr.predict_from_ndarr(resized.astype('float32'))
+            copy, roi, conv = self.gc.face_shape_detector_dlib(copy)
 
-            data = {}
-            data['rect'] = r
-            data['name'] = pred
+            if roi is not None :
 
-            ret_list.append(data)
+                white = np.zeros(roi.shape[0:2], dtype=np.uint8)
+                cv2.fillConvexPoly(white, conv, 1)
+
+                roi = cv2.bitwise_and(roi, roi, mask=white)
+
+                resized = cv2.resize(roi, (64, 64))
+
+                pred = self.pr.predict_from_ndarr(resized.astype('float32'))
+
+                data = {}
+                data['rect'] = r
+                data['name'] = pred
+
+                ret_list.append(data)
 
         return ret_list

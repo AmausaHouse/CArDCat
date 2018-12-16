@@ -22,7 +22,8 @@ def main():
 
         for movie in movies:
             # videoread.videoread(name, movie)
-            getcontours.make_faces_picture(name, movie)
+            g = getcontours.GetContours()
+            g.make_faces_picture(name, movie)
 
         path = './images/human_data/preprocessed_faces/' + name
         if os.path.exists(path):
