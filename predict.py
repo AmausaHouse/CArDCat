@@ -21,8 +21,11 @@ class Predict:
 
     def __init__(self):
 
-        self.model = model_from_json(open('./models/model.json', 'r').read())
-        self.model.load_weights('./models/model_weight.hdf5')
+        modelpath = os.path.join(os.path.dirname(__file__), 'models/model.json')
+        weightpath = os.path.join(os.path.dirname(__file__), 'models/model_weight.hdf5')
+
+        self.model = model_from_json(open(modelpath, 'r').read())
+        self.model.load_weights(weightpath)
 
         self.names = []
 
