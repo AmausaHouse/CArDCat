@@ -6,7 +6,6 @@ import numpy as np
 import cv2
 import dlib
 
-import imutils
 from imutils import face_utils
 
 import matplotlib.pyplot as plt
@@ -19,46 +18,46 @@ class GetContours:
         self.predictor = dlib.shape_predictor(const.predictor_path)
         self.detector = dlib.get_frontal_face_detector()
 
+    # 元画像を渡されてから顔部分を検出して64*64に変換, 凸包とtupleで投げる
     def face_shape_detector_dlib(self, img):
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        dets, scores, idx = self.detector.run(img_rgb, 0)
+        # 顔検出
+        dets = self.detector.run(img_rgb, 0)[0]
 
-        if len(dets) > 0:
-            for rect in dets:
-                shape = self.predictor(img_rgb, rect)
-                shape = face_utils.shape_to_np(shape)
-                copy = img.copy()
+        tuplis = []
 
-                conv = cv2.convexHull(shape)
+        # 顔部分の取得
+        for rect in dets:
+            copy = img.copy()
 
-                (x, y, w, h) = cv2.boundingRect(np.array([shape[0:68]])) 
-                roi = img[y:y+h, x:x+w]
+            # 顔パーツの検出
+            shape = self.predictor(img_rgb, rect)
+            shape = face_utils.shape_to_np(shape)
 
-                for i in range(conv.shape[0]):
-                    (px,py) = conv[i][0]
-                    cv2.putText(copy, str(i), (px + 10, py + 10), cv2.FONT_HERSHEY_PLAIN, 2, (0,0,255), 2, cv2.LINE_AA)
-                    cv2.circle(copy, (px, py), 1, (0, 0, 255), 10)
+            # 検出した顔パーツから凸包
+            conv = cv2.convexHull(shape)
 
-                for d2 in conv:
-                    for d1 in d2:
-                        d1[0] = int((d1[0] - x) * 64 / h)
-                        d1[1] = int((d1[1] - y) * 64 / w)
+            # 黒画像を生成
+            white = np.zeros(copy.shape[0:2], dtype=np.uint8)
+            # 凸包内部を白にする
+            cv2.fillConvexPoly(white, conv, color=255)
 
-                if roi.shape[0:2].count(0):
-                    return copy, None, None
+            # 凸包外部を黒にした画像を生成
+            copy = cv2.bitwise_and(copy, copy, mask=white)
 
-                roi = cv2.resize(roi,(64,64))
+            # 顔部分の切り出し
+            (x, y, w, h) = cv2.boundingRect(np.array([shape[0:68]]))
+            roi = copy[y:y+h, x:x+w]
 
-            return copy, roi, conv
-        else :
-            return img, None, None
+            tuplis.append((cv2.resize(roi, (64, 64)), rect))
+
+        return tuplis
 
     def make_faces_picture(self, human_name, movie_path):
 
         save_folder = './images/human_data/faces/' + human_name + '/'
 
         cap = cv2.VideoCapture(movie_path)
-        ret = True
 
         while True:
             ret, frame = cap.read()
@@ -66,27 +65,33 @@ class GetContours:
             if not ret:
                 break
 
+            # 動画を回す
             frame = frame.transpose(1, 0, 2)
-            frame, roi, conv = self.face_shape_detector_dlib(frame)
 
+            ret = self.face_shape_detector_dlib(frame)
+
+            """
             if const.show_contours:
                 cv2.imshow('img', frame)
+            """
 
-            if roi is not None :
+            # 画像と短形
+            for tup in ret:
 
-                white = np.zeros(roi.shape[0:2], dtype=np.uint8)
-                cv2.fillConvexPoly(white, conv, 1)
+                roi = tup[0]
 
-                roi = cv2.bitwise_and(roi, roi, mask=white)
-
+                """
                 if const.show_contours:
                     plt.imshow(cv2.cvtColor(roi, cv2.COLOR_BGR2RGB))
+                """
 
                 name = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
                 cv2.imwrite(save_folder + name + '.png', roi)
 
+            """
             cv2.waitKey(1)
             plt.pause(.01)
+            """
 
         cap.release()
         cv2.destroyAllWindows()

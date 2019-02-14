@@ -42,34 +42,20 @@ class ImagePredictor:
         self.pr = predict.Predict()
         self.gc = getcontours.GetContours()
 
-    def predict(self,path):
+    def predict(self, path):
 
         im = cv2.imread(path)
         rect = facetrimming.get_rect_from_ndarr(im)
 
         ret_list = []
 
-        for r in rect:
+        # 輪郭取るやつ (64*64の顔部分画像, 元画像からみた短形データ)
+        ret = self.gc.face_shape_detector_dlib(im)
 
-            copy = im.copy()[r[1]:r[1]+r[3],r[0]:r[0]+r[2]]
+        for roi, rect in ret:
 
-            copy, roi, conv = self.gc.face_shape_detector_dlib(copy)
+            pred = self.pr.predict_from_ndarr(roi.astype('float32'))
 
-            if roi is not None :
-
-                white = np.zeros(roi.shape[0:2], dtype=np.uint8)
-                cv2.fillConvexPoly(white, conv, 1)
-
-                roi = cv2.bitwise_and(roi, roi, mask=white)
-
-                resized = cv2.resize(roi, (64, 64))
-
-                pred = self.pr.predict_from_ndarr(resized.astype('float32'))
-
-                data = {}
-                data['rect'] = r
-                data['name'] = pred
-
-                ret_list.append(data)
+            ret_list.append(dict(name=pred, rect=rect))
 
         return ret_list

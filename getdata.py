@@ -21,10 +21,11 @@ def get_image_pathes(target_name, get_preprocessed = False):
 
 def make_dataset(names):
 
-    pathes  = glob.glob(dataset_folder + "*.png")
-
+    # でーたせっと
+    pathes = glob.glob(dataset_folder.replace('faces', 'preprocessed_faces') + "*.png")
     pathes = pathes[:min(len(pathes), const.testdata_max)]
 
+    # 本質の方
     pathes += glob.glob(target_folder.replace('faces', 'preprocessed_faces') + "*/*.png", recursive=True)
 
     vfunc = np.vectorize(lambda x: x / 255.0)
@@ -34,8 +35,8 @@ def make_dataset(names):
 
     np.random.shuffle(pathes)
 
-    data = np.zeros((size, 64, 64, 3), dtype = 'float32')
-    label = np.zeros((size, label_size + 1), dtype = 'float32')
+    data = np.zeros((size, 64, 64, 3), dtype='float32')
+    label = np.zeros((size, label_size + 1), dtype='float32')
 
     count = [0 for i in range(label_size + 1)]
 
@@ -44,6 +45,7 @@ def make_dataset(names):
 
         data[i] = vfunc(cv2.imread(pathes[i]).astype('float32'))
 
+        # ファイル名からラベルを張る
         for j in range(label_size):
             if pathes[i].find(names[j]) != -1:
                 flag = j

@@ -11,8 +11,6 @@ import getdata
 
 import const
 
-size = (64, 64)
-
 def preprocessing(target_name):
 
     # 適合するデータのみを取得
@@ -55,10 +53,8 @@ def preprocessing(target_name):
 
         return scratch_images
 
-    # 画像のリサイズ
     for im in image_pathes:
         i = cv2.imread(im)
-        i = cv2.resize(i, size)
 
         images = scratch_image(i)
         save_folder = im[:im.rfind('/') + 1].replace('faces', 'preprocessed_faces')

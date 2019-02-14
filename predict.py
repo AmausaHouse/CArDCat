@@ -1,19 +1,12 @@
 import os
-import numpy as np
-
-import cv2
 
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 
-from keras.models import Sequential, model_from_json
+from keras.models import model_from_json
 from keras.layers import *
-from keras.utils import plot_model
 
 import const
-import getdata
-import facetrimming
 
 vfunc = np.vectorize(lambda x: x / 255.0)
 
@@ -24,6 +17,7 @@ class Predict:
         modelpath = os.path.join(os.path.dirname(__file__), 'models/model.json')
         weightpath = os.path.join(os.path.dirname(__file__), 'models/model_weight.hdf5')
 
+        # cnnのあれ
         self.model = model_from_json(open(modelpath, 'r').read())
         self.model.load_weights(weightpath)
 
