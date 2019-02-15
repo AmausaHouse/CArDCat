@@ -23,6 +23,7 @@ def make_dataset(names):
 
     # でーたせっと
     pathes = glob.glob(dataset_folder.replace('faces', 'preprocessed_faces') + "*.png")
+    np.random.shuffle(pathes)
     pathes = pathes[:min(len(pathes), const.testdata_max)]
 
     # 本質の方

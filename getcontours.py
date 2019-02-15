@@ -8,6 +8,8 @@ import dlib
 
 from imutils import face_utils
 
+import glob
+
 import matplotlib.pyplot as plt
 
 import const
@@ -48,10 +50,33 @@ class GetContours:
             # 顔部分の切り出し
             (x, y, w, h) = cv2.boundingRect(np.array([shape[0:68]]))
             roi = copy[y:y+h, x:x+w]
+            if roi.shape[0] < 64 or roi.shape[1] < 64:
+                continue
 
             tuplis.append((cv2.resize(roi, (64, 64)), rect))
 
         return tuplis
+
+    """
+    loadpath = './images/learning_data/hoge/'
+    savepath = './images/learning_data/huga/'
+    """
+    def get_dataset(self, loadpath, savepath):
+        pathes = glob.glob(loadpath + '*.jpg')
+        for p in pathes:
+            img = cv2.imread(p)
+
+            ret = self.face_shape_detector_dlib(img)
+
+            # 画像と短形
+            for tup in ret:
+
+                roi = tup[0]
+
+                name = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
+                cv2.imwrite(savepath + name + '.png', roi)
+
+
 
     def make_faces_picture(self, human_name, movie_path):
 

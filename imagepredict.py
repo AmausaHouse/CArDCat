@@ -45,7 +45,6 @@ class ImagePredictor:
     def predict(self, path):
 
         im = cv2.imread(path)
-        rect = facetrimming.get_rect_from_ndarr(im)
 
         ret_list = []
 
