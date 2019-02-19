@@ -17,9 +17,9 @@ epoch = 15
 max_match = 100000
 max_not_match = 100000
 
-def cnn(names):
+def cnn(ids):
 
-    label_size, data, label = getdata.make_dataset(names)
+    label_size, data, label = getdata.make_dataset(ids)
 
     model = Sequential()
     model.add(Conv2D(input_shape=(64, 64, 3), filters=32,kernel_size=(2, 2), strides=(1, 1), padding="same"))

@@ -4,18 +4,18 @@ import cnn
 
 def main():
 
-    names = []
+    ids = []
 
     g = getcontours.GetContours()
 
     for id, movie_ids in const.name_movies:
 
-        names.append(id)
+        ids.append(id)
 
         for movie in movie_ids:
             g.make_faces_picture(id, movie)
 
-    cnn.cnn(names)
+    cnn.cnn(ids)
 
 
 if __name__ == '__main__':
