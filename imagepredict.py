@@ -55,6 +55,6 @@ class ImagePredictor:
 
             pred = self.pr.predict_from_ndarr(roi.astype('float32'))
 
-            ret_list.append(dict(name=pred, rect=rect))
+            ret_list.append(dict(index=pred, rect=rect))
 
         return ret_list

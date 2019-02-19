@@ -1,13 +1,6 @@
 import numpy as np
-import os
-import glob
-import subprocess
-import hashlib
-import datetime
 
 import cv2
-
-import getdata
 
 import const
 

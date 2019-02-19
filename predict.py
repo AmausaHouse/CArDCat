@@ -21,15 +21,9 @@ class Predict:
         self.model = model_from_json(open(modelpath, 'r').read())
         self.model.load_weights(weightpath)
 
-        self.names = []
-
-        for name, movies in const.name_movies:
-            self.names.append(name)
-
-        self.names.append('not match')
-
+    # データベースのindexと一致する 名前の数がNとして、照合しないならNを返す(ソースコードを読め)
     def predict_from_ndarr(self, im):
         im = vfunc(im)
         data = np.array([im])
 
-        return self.names[np.argmax(self.model.predict(data)[0])]
+        return np.argmax(self.model.predict(data)[0])

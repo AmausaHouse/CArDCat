@@ -1,9 +1,5 @@
-import os
-import shutil
-
 import const
 import getcontours
-import preprocessing
 import cnn
 
 def main():
