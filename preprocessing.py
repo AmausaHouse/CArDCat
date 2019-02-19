@@ -11,10 +11,8 @@ import getdata
 
 import const
 
-def preprocessing(target_name):
 
-    # 適合するデータのみを取得
-    image_pathes = getdata.get_image_pathes(target_name)[0]
+def preprocessing(save_folder, picture_id, data):
 
     def make_contrast(min_t, max_t, flag):
         diff_t = max_t - min_t
@@ -53,12 +51,8 @@ def preprocessing(target_name):
 
         return scratch_images
 
-    for im in image_pathes:
-        i = cv2.imread(im)
+    images = scratch_image(data)
 
-        images = scratch_image(i)
-        save_folder = im[:im.rfind('/') + 1].replace('faces', 'preprocessed_faces')
-
-        for img in images:
-            name = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
-            cv2.imwrite(save_folder + name + '.png', img)
+    for index, img in enumerate(images):
+        path = save_folder + '/' + picture_id + '_' + str(index) + '.png'
+        cv2.imwrite(path, img)

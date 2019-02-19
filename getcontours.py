@@ -2,15 +2,16 @@ import hashlib
 import datetime
 
 import numpy as np
+import os
 
 import cv2
 import dlib
 
 from imutils import face_utils
 
-import glob
+import preprocessing
 
-import matplotlib.pyplot as plt
+import glob
 
 import const
 
@@ -57,10 +58,6 @@ class GetContours:
 
         return tuplis
 
-    """
-    loadpath = './images/learning_data/hoge/'
-    savepath = './images/learning_data/huga/'
-    """
     def get_dataset(self, loadpath, savepath):
         pathes = glob.glob(loadpath + '*.jpg')
         for p in pathes:
@@ -76,11 +73,16 @@ class GetContours:
                 name = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
                 cv2.imwrite(savepath + name + '.png', roi)
 
+    def make_faces_picture(self, human_id, movie_id):
 
+        save_folder = './images/human_data/' + human_id + '/png/' + movie_id
+        movie_path = './images/human_data/' + human_id + '/mov/' + movie_id + '.mov'
 
-    def make_faces_picture(self, human_name, movie_path):
+        # 動画が存在していない場合だけ動かす
+        if os.path.exists(save_folder):
+            return
 
-        save_folder = './images/human_data/faces/' + human_name + '/'
+        os.mkdir(save_folder)
 
         cap = cv2.VideoCapture(movie_path)
 
@@ -93,30 +95,18 @@ class GetContours:
             # 動画を回す
             frame = frame.transpose(1, 0, 2)
 
+            # ここで画像加工
             ret = self.face_shape_detector_dlib(frame)
-
-            """
-            if const.show_contours:
-                cv2.imshow('img', frame)
-            """
 
             # 画像と短形
             for tup in ret:
 
                 roi = tup[0]
 
-                """
-                if const.show_contours:
-                    plt.imshow(cv2.cvtColor(roi, cv2.COLOR_BGR2RGB))
-                """
+                picture_id = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
 
-                name = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
-                cv2.imwrite(save_folder + name + '.png', roi)
-
-            """
-            cv2.waitKey(1)
-            plt.pause(.01)
-            """
+                # ここでノイズ
+                preprocessing.preprocessing(save_folder, picture_id, roi)
 
         cap.release()
         cv2.destroyAllWindows()

@@ -10,32 +10,17 @@ def main():
 
     names = []
 
-    for name, movies in const.name_movies:
+    g = getcontours.GetContours()
 
-        names.append(name)
+    for id, movie_ids in const.name_movies:
 
-        g = getcontours.GetContours()
+        names.append(id)
 
-        # facesを空にする
-        path = './images/human_data/faces/' + name
-        if os.path.exists(path):
-            shutil.rmtree(path)
-        os.mkdir(path)
-
-        # 動画からmake_faces_pictureをする
-        for movie in movies:
-            g.make_faces_picture(name, movie)
-
-        path = './images/human_data/preprocessed_faces/' + name
-        if os.path.exists(path):
-            shutil.rmtree('./images/human_data/preprocessed_faces/' + name)
-        os.mkdir('./images/human_data/preprocessed_faces/' + name)
-
-        # preprocessingをする
-        preprocessing.preprocessing(name)
+        for movie in movie_ids:
+            g.make_faces_picture(id, movie)
 
     cnn.cnn(names)
-    
+
 
 if __name__ == '__main__':
     main()

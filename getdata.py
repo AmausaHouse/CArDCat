@@ -6,7 +6,7 @@ import cv2
 
 import const
 
-dataset_folder = './images/learning_data/faces/'
+dataset_folder = './images/learning_data/png/'
 target_folder = './images/human_data/faces/'
 
 def get_image_pathes(target_name, get_preprocessed = False):
