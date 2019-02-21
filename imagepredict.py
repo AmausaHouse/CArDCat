@@ -50,6 +50,9 @@ class ImagePredictor:
 
         im = cv2.imdecode(arr, -1)
 
+        if im.shape[2] == 4:
+            im = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
+
         ret_list = []
 
         # 輪郭取るやつ (64*64の顔部分画像, 元画像からみた短形データ)
