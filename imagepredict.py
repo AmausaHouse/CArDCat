@@ -1,5 +1,5 @@
-import glob
 import numpy as np
+import base64
 
 import cv2
 
@@ -42,9 +42,13 @@ class ImagePredictor:
         self.pr = predict.Predict()
         self.gc = getcontours.GetContours()
 
-    def predict(self, path):
+    def predict(self, base):
 
-        im = cv2.imread(path)
+        binary = base64.b64decode(base)
+
+        arr = np.asarray(bytearray(binary), dtype=np.uint8)
+
+        im = cv2.imdecode(arr, -1)
 
         ret_list = []
 
