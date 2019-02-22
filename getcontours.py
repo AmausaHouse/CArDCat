@@ -9,6 +9,8 @@ import dlib
 
 from imutils import face_utils
 
+from concurrent.futures import ThreadPoolExecutor
+
 import preprocessing
 
 import glob
@@ -84,29 +86,35 @@ class GetContours:
 
         os.mkdir(save_folder)
 
-        cap = cv2.VideoCapture(movie_path)
+        cpu_num = multiprocessing.cpu_count()
+        frame_num = cv2.VideoCapture(movie_path).get(cv2.CAP_PROP_FRAME_COUNT)
 
-        while True:
-            ret, frame = cap.read()
+        def read(frame_mod):
+            cap = cv2.VideoCapture(movie_path)
 
-            if not ret:
-                break
+            for time in range(int(frame_num // cpu_num + 1)):
+                cap.set(cv2.CAP_PROP_POS_FRAMES, cpu_num * time + frame_mod)
+                ret, frame = cap.read()
+                if not ret:
+                    break
 
-            # 動画を回す
-            frame = frame.transpose(1, 0, 2)
+                # 動画を回す
+                frame = frame.transpose(1, 0, 2)
 
-            # ここで画像加工
-            ret = self.face_shape_detector_dlib(frame)
+                # ここで画像加工
+                ret = self.face_shape_detector_dlib(frame)
 
-            # 画像と短形
-            for tup in ret:
+                # 画像と短形
+                for tup in ret:
 
-                roi = tup[0]
+                    roi = tup[0]
 
-                picture_id = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
+                    picture_id = hashlib.md5(str(datetime.datetime.utcnow()).encode("utf-8")).hexdigest()
 
                 # ここでノイズ
                 preprocessing.preprocessing(save_folder, picture_id, roi)
 
-        cap.release()
-        cv2.destroyAllWindows()
+            cap.release()
+
+        with ThreadPoolExecutor(max_workers=cpu_num) as executor:
+            executor.map(read, range(cpu_num))
