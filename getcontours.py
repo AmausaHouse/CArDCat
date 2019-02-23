@@ -100,7 +100,7 @@ class GetContours:
                     break
 
                 # 動画を回す
-                frame = frame.transpose(1, 0, 2)
+                # frame = frame.transpose(1, 0, 2)
 
                 # ここで画像加工
                 ret = self.face_shape_detector_dlib(frame)

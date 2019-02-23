@@ -27,7 +27,9 @@ def make_dataset(ids):
     pathes = pathes[:min(len(pathes), const.testdata_max)]
 
     # 本質の方
-    pathes += glob.glob(target_folder + "*/png/*/*.png", recursive=True)
+    # pathes += glob.glob(target_folder + "*/png/*/*.png", recursive=True)
+    for nam in ids:
+        pathes += glob.glob(target_folder + nam + "/png/*/*.png", recursive=True)[:3000]
 
     vfunc = np.vectorize(lambda x: x / 255.0)
 
