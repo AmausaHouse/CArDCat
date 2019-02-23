@@ -6,8 +6,6 @@ matplotlib.use('Agg')
 from keras.models import model_from_json
 from keras.layers import *
 
-import const
-
 vfunc = np.vectorize(lambda x: x / 255.0)
 
 class Predict:
@@ -19,6 +17,7 @@ class Predict:
 
         # cnnのあれ
         self.model = model_from_json(open(modelpath, 'r').read())
+        self.model._make_predict_function()
         self.model.load_weights(weightpath)
 
     # データベースのindexと一致する 名前の数がNとして、照合しないならNを返す(ソースコードを読め)
