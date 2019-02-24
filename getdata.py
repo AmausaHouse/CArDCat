@@ -2,6 +2,7 @@ import glob
 
 import numpy as np
 
+import sys
 import cv2
 
 import const
@@ -59,5 +60,9 @@ def make_dataset(ids):
         label[i][flag] = 1
 
     print('label count : {}'.format(count))
+
+    for c in count:
+        if c == 0:
+            sys.exit()
 
     return label_size, data, label
